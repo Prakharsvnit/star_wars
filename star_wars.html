@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        input{
+            width:200px;
+        }
+        #character{
+            width:206px;
+            height:200px;
+            border:1px solid black;
+            border-top: none;
+            overflow: scroll;
+        }
+    </style>
+</head>
+<body>
+    <input oninput="throttleFunction()" type="text" id="query">
+    <div id="character"></div>
+</body>
+</html>
+<script>
+
+    let char_div = document.getElementById("character");
+
+    var timerId;
+
+    async function searchCharacter(){
+
+        let query = document.getElementById("query").value;
+
+        if(query.length <= 2){
+
+            return false;
+
+        }
+
+        let res = await fetch(`https://swapi.dev/api/people/?search=${query}`)
+
+        let data = await res.json();
+
+       return data.results
+    }
+
+    function throttleFunction() {
+
+        if(timerId){
+            return false;
+        }
+
+        timerId = setTimeout(() => {
+            main();
+            timerId = null;
+        },500)
+
+        console.log("timerId",timerId);
+
+        main();
+
+    }
+
+    function appendCharacters(d) {
+
+        char_div.innerHTML = null;
+
+        d.forEach(({ name }) => {
+
+            let p = document.createElement('p');
+
+            p.innerText = name;
+
+            char_div.append(p);
+
+        })
+
+    }
+
+    async function main() {
+
+        let character = await searchCharacter();
+
+        appendCharacters(character);
+
+    }
+
+
+</script>
